@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "262145554807",
+    "project_id": "smokebreakbuddy",
+    "storage_bucket": "smokebreakbuddy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262145554807:android:e461569fb8656a15e48972",
+        "android_client_info": {
+          "package_name": "com.smokebreakbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwM_RguKeBX3ThgiHHIW6-1yaPLkLmLpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

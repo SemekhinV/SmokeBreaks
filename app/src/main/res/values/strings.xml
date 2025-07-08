@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smoke Break Buddy</string>
+    
+    <!-- Authentication -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="department">Department</string>
+    <string name="forgot_password">Forgot Password?</string>
+    
+    <!-- Navigation -->
+    <string name="home">Home</string>
+    <string name="groups">Groups</string>
+    <string name="invitations">Invitations</string>
+    <string name="analytics">Analytics</string>
+    <string name="profile">Profile</string>
+    
+    <!-- Break Invitations -->
+    <string name="create_invitation">Create Invitation</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="maybe">Maybe</string>
+    <string name="send_invitation">Send Invitation</string>
+    
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+</resources>

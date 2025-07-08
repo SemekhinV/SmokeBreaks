@@ -32,8 +32,6 @@ class SmokeBreakBuddyApplication : Application(), Configuration.Provider {
         // Create notification channels
         createNotificationChannels()
         
-        // Initialize WorkManager
-        WorkManager.initialize(this, workManagerConfiguration)
     }
     
     override fun getWorkManagerConfiguration(): Configuration {

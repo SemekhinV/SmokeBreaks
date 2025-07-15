@@ -10,9 +10,11 @@ import com.smokebreakbuddy.data.local.dao.BreakSessionDao
 import com.smokebreakbuddy.data.local.dao.GroupDao
 import com.smokebreakbuddy.data.local.dao.UserDao
 import com.smokebreakbuddy.data.local.converters.Converters
+import com.smokebreakbuddy.data.local.dao.MemberDao
 import com.smokebreakbuddy.data.model.BreakInvitation
 import com.smokebreakbuddy.data.model.BreakSession
 import com.smokebreakbuddy.data.model.Group
+import com.smokebreakbuddy.data.model.Member
 import com.smokebreakbuddy.data.model.User
 
 @Database(
@@ -20,7 +22,8 @@ import com.smokebreakbuddy.data.model.User
         User::class,
         Group::class,
         BreakInvitation::class,
-        BreakSession::class
+        BreakSession::class,
+        Member::class,
     ],
     version = 1,
     exportSchema = false
@@ -30,6 +33,7 @@ abstract class SmokeBreakBuddyDatabase : RoomDatabase() {
     
     abstract fun userDao(): UserDao
     abstract fun groupDao(): GroupDao
+    abstract fun memberDao(): MemberDao
     abstract fun breakInvitationDao(): BreakInvitationDao
     abstract fun breakSessionDao(): BreakSessionDao
     

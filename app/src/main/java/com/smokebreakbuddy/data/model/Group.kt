@@ -1,7 +1,10 @@
 package com.smokebreakbuddy.data.model
 
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
@@ -15,23 +18,50 @@ data class Group(
     val description: String = "",
     val isPublic: Boolean = false,
     val createdBy: String = "",
-    val adminIds: List<String> = emptyList(),
-    val memberIds: List<String> = emptyList(),
     val inviteCode: String = "",
     val maxMembers: Int = 20,
     val isActive: Boolean = true,
     @ServerTimestamp
     val createdAt: Date? = null,
     @ServerTimestamp
-    val updatedAt: Date? = null
+    val updatedAt: Date? = null,
+//    val invitation: List<GroupInvitation> = listOf()
 )
 
-data class GroupMember(
+@Entity(
+    tableName = "members",
+    primaryKeys = ["userId", "groupId"],
+    foreignKeys = [
+        ForeignKey(
+            entity = Group::class,
+            parentColumns = ["groupId"],
+            childColumns = ["groupId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["userId"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
+data class Member(
     val userId: String = "",
     val groupId: String = "",
     val role: GroupRole = GroupRole.MEMBER,
-    val joinedAt: Date? = null,
+    @ServerTimestamp val joinedAt: Date = Date(),
     val isActive: Boolean = true
+)
+
+data class GroupWithMembers(
+    @Embedded
+    val group: Group,
+    @Relation(
+        parentColumn = "groupId",
+        entityColumn = "groupId"
+    )
+    val members: List<Member> // Теперь здесь список сущностей Member
 )
 
 enum class GroupRole {

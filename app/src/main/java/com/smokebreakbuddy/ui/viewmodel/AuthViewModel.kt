@@ -2,10 +2,12 @@ package com.smokebreakbuddy.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.smokebreakbuddy.data.model.User
 import com.smokebreakbuddy.data.repository.UserRepository
+import com.smokebreakbuddy.ui.navigation.Destinations
 import com.smokebreakbuddy.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -166,7 +168,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signOut() {
+    fun signOut(navController: NavController) {
         viewModelScope.launch {
             _isLoading.value = true
             when (val result = userRepository.signOut()) {
@@ -182,14 +184,16 @@ class AuthViewModel @Inject constructor(
                 }
             }
             _isLoading.value = false
+            navController.navigate(Destinations.AUTH_SCREEN) {
+                popUpTo(navController.graph.startDestinationId)
+                launchSingleTop = true
+            }
         }
     }
 
     fun updateOnlineStatus(isOnline: Boolean) {
         viewModelScope.launch {
-            if (userRepository.isUserLoggedIn()) {
-                userRepository.updateUserOnlineStatus(isOnline)
-            }
+            userRepository.signOut()
         }
     }
 

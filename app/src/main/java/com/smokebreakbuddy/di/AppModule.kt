@@ -9,6 +9,7 @@ import com.smokebreakbuddy.data.local.SmokeBreakBuddyDatabase
 import com.smokebreakbuddy.data.local.dao.BreakInvitationDao
 import com.smokebreakbuddy.data.local.dao.BreakSessionDao
 import com.smokebreakbuddy.data.local.dao.GroupDao
+import com.smokebreakbuddy.data.local.dao.MemberDao
 import com.smokebreakbuddy.data.local.dao.UserDao
 import dagger.Module
 import dagger.Provides
@@ -52,6 +53,9 @@ object AppModule {
 
     @Provides
     fun provideGroupDao(database: SmokeBreakBuddyDatabase): GroupDao = database.groupDao()
+
+    @Provides
+    fun provideMemberDao(database: SmokeBreakBuddyDatabase): MemberDao = database.memberDao()
 
     @Provides
     fun provideBreakInvitationDao(database: SmokeBreakBuddyDatabase): BreakInvitationDao = database.breakInvitationDao()

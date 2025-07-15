@@ -75,7 +75,7 @@ fun MainScreen(
         Box(modifier = Modifier.padding(paddingValues)) {
             when (selectedItem) {
                 0 -> HomeScreen()
-                1 -> GroupsScreen()
+                1 -> GroupsScreen(navController)
                 2 -> InvitationsScreen()
                 3 -> AnalyticsScreen()
                 4 -> ProfileScreen()

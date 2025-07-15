@@ -12,13 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.smokebreakbuddy.ui.navigation.Destinations
 import com.smokebreakbuddy.ui.theme.*
 import com.smokebreakbuddy.ui.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    navController: NavHostController = rememberNavController()
 ) {
     val currentUser by authViewModel.currentUser.collectAsState()
     
@@ -111,7 +116,7 @@ fun ProfileScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        authViewModel.signOut()
+                        authViewModel.signOut(navController)
                         showSignOutDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(

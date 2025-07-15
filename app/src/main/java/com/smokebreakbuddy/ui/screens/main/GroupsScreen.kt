@@ -12,60 +12,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.smokebreakbuddy.data.model.Group
+import com.smokebreakbuddy.data.model.GroupWithMembers
 import com.smokebreakbuddy.ui.theme.BreakGreen
-import com.smokebreakbuddy.ui.theme.OnlineGreen
 import com.smokebreakbuddy.ui.viewmodel.AuthViewModel
+import com.smokebreakbuddy.ui.viewmodel.GroupViewModel
+import com.smokebreakbuddy.utils.IntOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupsScreen(
+    navController: NavController,
+    groupViewModel: GroupViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    val isLoading by groupViewModel.isLoading.collectAsState()
+    val groupError by groupViewModel.groupError.collectAsState()
+    val userGroup by groupViewModel.userGroups.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
-    
-    // Mock data for demonstration - replace with actual ViewModel
-    val myGroups = remember {
-        listOf(
-            Group(
-                groupId = "1",
-                name = "Development Team",
-                description = "Daily standup smoke breaks",
-                memberIds = listOf("user1", "user2", "user3", "user4"),
-                isPublic = false,
-                createdBy = "user1"
-            ),
-            Group(
-                groupId = "2",
-                name = "Marketing Squad",
-                description = "Creative minds, creative breaks",
-                memberIds = listOf("user1", "user5", "user6"),
-                isPublic = true,
-                createdBy = "user5"
-            )
-        )
-    }
-    
-    val publicGroups = remember {
-        listOf(
-            Group(
-                groupId = "3",
-                name = "Coffee & Smoke",
-                description = "Open to all coffee and smoke enthusiasts",
-                memberIds = listOf("user7", "user8", "user9", "user10", "user11"),
-                isPublic = true,
-                createdBy = "user7"
-            ),
-            Group(
-                groupId = "4",
-                name = "Floor 3 Buddies",
-                description = "Everyone working on the third floor",
-                memberIds = listOf("user12", "user13"),
-                isPublic = true,
-                createdBy = "user12"
-            )
-        )
-    }
     
     var showCreateGroupDialog by remember { mutableStateOf(false) }
     var showJoinGroupDialog by remember { mutableStateOf(false) }
@@ -122,13 +87,13 @@ fun GroupsScreen(
         // My Groups Section
         item {
             Text(
-                text = "My Groups (${myGroups.size})",
+                text = "My Groups (${userGroup.size}()})",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
         }
         
-        if (myGroups.isEmpty()) {
+        if (userGroup.isEmpty()) {
             item {
                 EmptyGroupsCard(
                     title = "No groups yet",
@@ -138,10 +103,10 @@ fun GroupsScreen(
                 )
             }
         } else {
-            items(myGroups) { group ->
+            items(userGroup) { data ->
                 GroupCard(
-                    group = group,
-                    isOwner = group.createdBy == currentUser?.userId,
+                    info = data,
+                    isOwner = data.group.createdBy == currentUser?.userId,
                     onEdit = { /* TODO: Edit group */ },
                     onLeave = { /* TODO: Leave group */ },
                     onViewMembers = { /* TODO: View members */ }
@@ -159,21 +124,22 @@ fun GroupsScreen(
             )
         }
         
-        items(publicGroups) { group ->
-            PublicGroupCard(
-                group = group,
-                onJoin = { /* TODO: Join group */ }
-            )
-        }
+//        items(publicGroups) { group ->
+//            PublicGroupCard(
+//                group = group,
+//                onJoin = { /* TODO: Join group */ }
+//            )
+//        }
     }
     
     // Create Group Dialog
     if (showCreateGroupDialog) {
         CreateGroupDialog(
             onDismiss = { showCreateGroupDialog = false },
-            onCreateGroup = { name, description, isPublic ->
+            onCreateGroup = { name, description, isPublic, maxMembers ->
                 // TODO: Create group
                 showCreateGroupDialog = false
+                groupViewModel.createGroup(name, description, isPublic, maxMembers )
             }
         )
     }
@@ -192,7 +158,7 @@ fun GroupsScreen(
 
 @Composable
 fun GroupCard(
-    group: Group,
+    info: GroupWithMembers,
     isOwner: Boolean,
     onEdit: () -> Unit,
     onLeave: () -> Unit,
@@ -214,7 +180,7 @@ fun GroupCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = group.name,
+                            text = info.group.name,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -234,10 +200,10 @@ fun GroupCard(
                         }
                     }
                     
-                    if (group.description.isNotEmpty()) {
+                    if (info.group.description.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = group.description,
+                            text = info.group.description,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -256,7 +222,7 @@ fun GroupCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${group.memberIds.size} members",
+                            text = "${info.members.size} members",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -264,14 +230,14 @@ fun GroupCard(
                         Spacer(modifier = Modifier.width(16.dp))
                         
                         Icon(
-                            if (group.isPublic) Icons.Default.Public else Icons.Default.Lock,
+                            if (info.group.isPublic) Icons.Default.Public else Icons.Default.Lock,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (group.isPublic) "Public" else "Private",
+                            text = if (info.group.isPublic) "Public" else "Private",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -321,7 +287,7 @@ fun GroupCard(
 
 @Composable
 fun PublicGroupCard(
-    group: Group,
+    info: GroupWithMembers,
     onJoin: () -> Unit
 ) {
     Card(
@@ -331,15 +297,15 @@ fun PublicGroupCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = group.name,
+                text = info.group.name,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             
-            if (group.description.isNotEmpty()) {
+            if (info.group.description.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = group.description,
+                    text = info.group.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -363,7 +329,7 @@ fun PublicGroupCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${group.memberIds.size} members",
+                        text = "${info.members.size} members",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -433,12 +399,13 @@ fun EmptyGroupsCard(
 @Composable
 fun CreateGroupDialog(
     onDismiss: () -> Unit,
-    onCreateGroup: (String, String, Boolean) -> Unit
+    onCreateGroup: (String, String, Boolean, Int) -> Unit
 ) {
     var groupName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var isPublic by remember { mutableStateOf(false) }
-    
+    var maxMembers by remember { mutableIntStateOf(5) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Create New Group") },
@@ -461,6 +428,14 @@ fun CreateGroupDialog(
                     placeholder = { Text("Describe your group...") },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
+                )
+
+                IntOutlinedTextField(
+                    label = "Max Members",
+                    initialValue = maxMembers,
+                    onValueChange = { maxMembers = it ?: 20 },
+                    minValue = 2,
+                    maxValue = 350
                 )
                 
                 Row(
@@ -489,7 +464,7 @@ fun CreateGroupDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    onCreateGroup(groupName.trim(), description.trim(), isPublic)
+                    onCreateGroup(groupName.trim(), description.trim(), isPublic, maxMembers)
                 },
                 enabled = groupName.isNotBlank()
             ) {
